@@ -1,275 +1,89 @@
-Here’s your PDF content converted cleanly into **Markdown (.md)** format:
+# PES-VCS Implementation Report
+**Author:** Prajwalindra H  
+**SRN:** PES2UG24AM117  
+**Repository:** `PES2UG24AM117-pes-vcs`
 
 ---
 
-````md
-# OS Assignment Help Needed - Google Gemini
+## 📸 Implementation Screenshots
 
-## PES-VCS Complete Implementation & Screenshot Guide
+### Phase 1: Object Storage Foundation
+* **Screenshot 1A (Test Objects Pass):** ![Screenshot 1A](Screenshots/SCREENSHOT 1A.png)  
+  *(Placeholder: Replace with your actual screenshot of `./test_objects` passing)*
 
-This document is your complete roadmap for the PES-VCS assignment, including the full C code solutions for all TODO blocks. Keep it open side-by-side with your code editor.
+* **Screenshot 1B (Sharded Directory):** ![Screenshot 1B](Screenshots/SCREENSHOT 1B.png)  
+  *(Placeholder: Replace with your actual screenshot of `find .pes/objects -type f`)*
 
-🚨 **Golden Rule:** You MUST make at least 5 Git commits per phase. Push them to your GitHub repository regularly.
+### Phase 2: Tree Objects
+* **Screenshot 2A (Test Tree Pass):** ![Screenshot 2A](Screenshots/SCREENSHOT 2A.png)  
+  *(Placeholder: Replace with your actual screenshot of `./test_tree` passing)*
 
----
+* **Screenshot 2B (Raw Tree Hex):** ![Screenshot 2B](Screenshots/SCREENSHOT 2B.png)  
+  *(Placeholder: Replace with your actual screenshot of `xxd` on a tree object)*
 
-## Step 0: Repository Setup (Do NOT Fork!)
+### Phase 3: The Index (Staging Area)
+* **Screenshot 3A (Status Output):** ![Screenshot 3A](Screenshots/SCREENSHOT 3A.png)  
+  *(Placeholder: Replace with your actual screenshot of `pes status` showing staged files)*
 
-1. Go to the original assignment repository on GitHub.
-2. Do not fork it. Click **"Use this template"** → **"Create a new repository"**.
-3. Name your repository exactly:  
-   `PES2UG24AM117-pes-vcs`
-4. Set repository to **Public**.
-5. Clone it to your Ubuntu VM and `cd` into it.
+* **Screenshot 3B (Raw Index File):** ![Screenshot 3B](Screenshots/SCREENSHOT 3B.png)  
+  *(Placeholder: Replace with your actual screenshot of `cat .pes/index`)*
 
-### Pre-Flight Check
+### Phase 4: Commits and History
+* **Screenshot 4A (Commit Log):** ![Screenshot 4A](Screenshots/SCREENSHOT 4A.png)  
+  *(Placeholder: Replace with your actual screenshot of `pes log`)*
 
-```bash
-export PES_AUTHOR="Prajwalindra H <PES2UG24AM117>"
-````
+* **Screenshot 4B (Object Store Growth):** ![Screenshot 4B](Screenshots/SCREENSHOT 4B.png)  
+  *(Placeholder: Replace with your actual screenshot showing objects after commits)*
 
----
+* **Screenshot 4C (Reference Chain):** ![Screenshot 4C](Screenshots/SCREENSHOT 4C.png)  
+  *(Placeholder: Replace with your actual screenshot of `HEAD` and `main` refs)*
 
-# Phase 1: Object Storage Foundation (`object.c`)
-
-Replace the TODO functions with:
-
-## object_write & object_read
-
-```c
-int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out) {
-    const char *type_str = type == OBJ_BLOB ? "blob" : (type == OBJ_TREE ? "tree" : "commit");
-
-    char header[64];
-    int header_len = snprintf(header, sizeof(header), "%s %zu", type_str, len) + 1;
-
-    size_t total_len = header_len + len;
-    uint8_t *buffer = malloc(total_len);
-
-    memcpy(buffer, header, header_len);
-    memcpy(buffer + header_len, data, len);
-
-    compute_hash(buffer, total_len, id_out);
-
-    if (object_exists(id_out)) {
-        free(buffer);
-        return 0;
-    }
-
-    char path[512];
-    object_path(id_out, path, sizeof(path));
-
-    char dir_path[512];
-    snprintf(dir_path, sizeof(dir_path), "%.*s", (int)(strrchr(path, '/') - path), path);
-    mkdir(dir_path, 0755);
-
-    char tmp_path[512];
-    snprintf(tmp_path, sizeof(tmp_path), "%s/tmp.XXXXXX", dir_path);
-
-    int fd = mkstemp(tmp_path);
-    if (fd < 0) { free(buffer); return -1; }
-
-    write(fd, buffer, total_len);
-    fsync(fd);
-    close(fd);
-
-    rename(tmp_path, path);
-    free(buffer);
-    return 0;
-}
-
-int object_read(const ObjectID *id, ObjectType *type_out, void **data_out, size_t *len_out) {
-    char path[512];
-    object_path(id, path, sizeof(path));
-
-    FILE *f = fopen(path, "rb");
-    if (!f) return -1;
-
-    fseek(f, 0, SEEK_END);
-    size_t total_len = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    uint8_t *buffer = malloc(total_len);
-    fread(buffer, 1, total_len, f);
-    fclose(f);
-
-    ObjectID computed_id;
-    compute_hash(buffer, total_len, &computed_id);
-
-    if (memcmp(id->hash, computed_id.hash, HASH_SIZE) != 0) {
-        free(buffer);
-        return -1;
-    }
-
-    uint8_t *null_byte = memchr(buffer, '\0', total_len);
-
-    char type_str[32];
-    sscanf((char *)buffer, "%31s %zu", type_str, len_out);
-
-    if (strcmp(type_str, "blob") == 0) *type_out = OBJ_BLOB;
-    else if (strcmp(type_str, "tree") == 0) *type_out = OBJ_TREE;
-    else if (strcmp(type_str, "commit") == 0) *type_out = OBJ_COMMIT;
-
-    *data_out = malloc(*len_out);
-    memcpy(*data_out, null_byte + 1, *len_out);
-
-    free(buffer);
-    return 0;
-}
-```
-
-### Testing
-
-```bash
-make test_objects
-./test_objects
-find .pes/objects -type f
-```
+### Phase 5: Final Integration
+* **Final Integration Screenshot:** ![Final Part 1](Screenshots/FINAL SCREENSHOT part 1.png)(![Final Part 2](<Screenshots/FINAL SCREENSHOT part 2.png>)) 
+  *(Placeholder: Replace with your actual screenshot of `make test-integration` passing)*
 
 ---
 
-# Phase 2: Tree Objects (`tree.c`)
+## 📝 Analysis Questions
 
-## tree_from_index
+### Q5.1: Branching and Checkout Implementation
+**How to implement checkout — what files need to change in `.pes/`, and what must happen to the working directory? What makes this operation complex?**
 
-```c
-// (Full recursive implementation here — unchanged from PDF)
-```
+To implement `pes checkout <branch>`, the system must first read the branch reference file (e.g., `.pes/refs/heads/<branch>`) to find the target commit hash. From that commit, it reads the root tree hash and recursively walks the tree to reconstruct the directory and file structure in the physical working directory. 
 
-### Testing
+Inside `.pes/`, the `HEAD` file must be updated to point to the newly checked-out branch (`ref: refs/heads/<branch>`), and the `.pes/index` file must be rewritten to match the exact state of the newly loaded tree.
 
-```bash
-make test_tree
-./test_tree
-xxd .pes/objects/XX/YYY... | head -20
-```
+The complexity lies in state management. The operation must safely delete files that exist in the current branch but not the target branch, while strictly avoiding the deletion or overwriting of any uncommitted work (dirty files) the user currently has in their working directory.
 
----
+### Q5.2: Detecting a Dirty Working Directory
+**Describe how you would detect this "dirty working directory" conflict using only the index and the object store.**
 
-# Phase 3: Index / Staging Area (`index.c`)
+A "dirty" working directory occurs when the working files do not match the currently staged index or the latest commit. To detect a conflict during checkout, I would:
+1. Scan the working directory and calculate the hashes of all tracked files (or use `stat` metadata like `mtime` and `size` for a fast comparison against the index, as implemented in `index_status`).
+2. Compare the index against the target branch's root tree. 
+3. If a file has uncommitted modifications (dirty) *and* that specific file differs between the current HEAD tree and the target branch tree, a conflict is triggered. The checkout must refuse to run to prevent silently overwriting the user's unsaved local changes.
 
-## Functions
+### Q5.3: Detached HEAD State
+**What happens if you make commits in this state? How could a user recover those commits?**
 
-* `index_load`
-* `index_save`
-* `index_add`
+In a Detached HEAD state, the `.pes/HEAD` file contains a raw commit hash instead of a branch reference (like `ref: refs/heads/main`). If you make commits in this state, the new commit objects are successfully created in the object store, and HEAD moves to point to them. However, no branch reference file is updated.
 
-```c
-// (Code unchanged from PDF)
-```
+If the user then checks out a different branch (e.g., `pes checkout main`), HEAD is rewritten. The commits made during the detached state become "unreachable" or "dangling" because no branch pointer references them. To recover them, the user must remember the hash of the last detached commit and create a new branch pointing to it. In a real Git system, the user could use `git reflog`, which keeps a local history of where HEAD has pointed, to find the lost hash and recover the branch.
 
-### Testing
+### Q6.1: Garbage Collection and Space Reclamation
+**Describe an algorithm to find and delete these objects. What data structure would you use to track "reachable" hashes efficiently?**
 
-```bash
-make pes
-./pes init
+A standard Mark-and-Sweep algorithm is required for garbage collection (GC). 
+1. **Mark Phase:** Iterate through all branch files in `.pes/refs/heads/` and the `HEAD` file. For each commit found, "mark" it as reachable. Then, traverse its parent commits recursively, marking all of them. For every marked commit, load its root tree, and recursively mark all sub-trees and blobs it references.
+2. **Sweep Phase:** Iterate through all files in the `.pes/objects/` directory. If a file's hash is not in the "marked" collection, it is unreachable and can be safely deleted.
 
-echo "hello" > file1.txt
-echo "world" > file2.txt
+The most efficient data structure for tracking reachable hashes is a **Hash Set**. It provides $O(1)$ lookups and prevents processing the same tree or blob multiple times. Even with 100,000 commits, deduplication ensures the traversal remains efficient by halting recursion when an already-marked object is encountered.
 
-./pes add file1.txt file2.txt
-./pes status
+### Q6.2: Garbage Collection Race Conditions
+**Why is it dangerous to run garbage collection concurrently with a commit operation? Describe a race condition... How does Git's real GC avoid this?**
 
-cat .pes/index
-```
+Running GC concurrently with a commit operation introduces a severe race condition. Imagine a user runs `pes add file.txt`. A new blob object is written to `.pes/objects/`. Immediately after, a concurrent GC process begins its "Mark" phase. Because the user hasn't run `pes commit` yet, this new blob is not referenced by any commit or tree. The GC process determines the blob is unreachable. 
 
----
+As the user initiates the `pes commit` operation, the GC process enters its "Sweep" phase and deletes the newly created blob. The commit completes, creating a tree that points to a deleted blob, resulting in a corrupted repository.
 
-# Phase 4: Commits and History (`commit.c`)
-
-## commit_create
-
-```c
-int commit_create(const char *message, ObjectID *commit_id_out) {
-    Commit c;
-    memset(&c, 0, sizeof(Commit));
-
-    if (tree_from_index(&c.tree) != 0) return -1;
-
-    if (head_read(&c.parent) == 0) c.has_parent = 1;
-    else c.has_parent = 0;
-
-    c.timestamp = (uint64_t)time(NULL);
-    strncpy(c.author, pes_author(), sizeof(c.author) - 1);
-    strncpy(c.message, message, sizeof(c.message) - 1);
-
-    void *data;
-    size_t len;
-
-    if (commit_serialize(&c, &data, &len) != 0) return -1;
-
-    if (object_write(OBJ_COMMIT, data, len, commit_id_out) != 0) {
-        free(data);
-        return -1;
-    }
-
-    free(data);
-    return head_update(commit_id_out);
-}
-```
-
-### Testing
-
-```bash
-./pes commit -m "Initial commit"
-
-echo "World" >> file1.txt
-./pes add file1.txt
-./pes commit -m "Update file1"
-
-echo "Goodbye" > bye.txt
-./pes add bye.txt
-./pes commit -m "Add farewell"
-
-./pes log
-```
-
----
-
-# Phase 5: Final Integration & Report
-
-### Integration Test
-
-```bash
-make test-integration
-```
-
----
-
-## Report Requirements
-
-Create `README.md` or `report.pdf`:
-
-1. Insert all screenshots (1A → Final)
-2. Answer:
-
-### Analysis Questions
-
-* Q5.1: How to implement checkout
-* Q5.2: Detecting dirty working directory
-* Q5.3: Detached HEAD state
-* Q6.1: Garbage collection algorithm
-* Q6.2: Garbage collection race conditions
-
----
-
-## Final Step
-
-* Commit your report
-* Push to GitHub
-* Ensure:
-
-  * Repo is **public**
-  * At least **20 commits**
-
----
-
-```
-
----
-
-If you want, I can:
-- clean up formatting further (like fixing missing code in Phase 2/3),
-- split it into a **perfect README.md submission**, or  
-- generate a **ready-to-submit report with answers included**.
-```
+Real Git avoids this by enforcing a "grace period" (typically 2 weeks). During `git gc`, any unreachable object that has a modification timestamp newer than the grace period is strictly preserved. This ensures that objects currently being staged or generated by concurrent commands are never deleted

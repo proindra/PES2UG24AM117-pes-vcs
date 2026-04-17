@@ -1,7 +1,4 @@
 // tree.c — Tree object serialization and construction
-//
-// Binary tree format (per entry, concatenated with no separators):
-//   "<mode-as-ascii-octal> <name>\0<32-byte-binary-hash>"
 
 #include "tree.h"
 #include "index.h"
@@ -166,7 +163,16 @@ static int write_tree_level(IndexEntry *entries, int count, int depth, ObjectID 
 
 // Build a tree hierarchy from the current index
 int tree_from_index(ObjectID *id_out) {
-    Index idx;
-    if (index_load(&idx) != 0 || idx.count == 0) return -1;
-    return write_tree_level(idx.entries, idx.count, 0, id_out);
+    // HEAP FIX: Allocate 5.6MB on the HEAP to prevent a Stack Overflow!
+    Index *idx = malloc(sizeof(Index));
+    if (!idx) return -1;
+    
+    if (index_load(idx) != 0 || idx->count == 0) {
+        free(idx);
+        return -1; // Empty index means no tree to build
+    }
+    
+    int rc = write_tree_level(idx->entries, idx->count, 0, id_out);
+    free(idx); // Give memory back
+    return rc;
 }
