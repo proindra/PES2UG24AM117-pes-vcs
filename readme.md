@@ -8,38 +8,38 @@
 ## 📸 Implementation Screenshots
 
 ### Phase 1: Object Storage Foundation
-* **Screenshot 1A (Test Objects Pass):** ![Screenshot 1A](Screenshots/SCREENSHOT 1A.png)  
+* **Screenshot 1A (Test Objects Pass):** ![Screenshot 1A](<Screenshots/SCREENSHOT 1A.png>)  
   *(Placeholder: Replace with your actual screenshot of `./test_objects` passing)*
 
-* **Screenshot 1B (Sharded Directory):** ![Screenshot 1B](Screenshots/SCREENSHOT 1B.png)  
+* **Screenshot 1B (Sharded Directory):** ![Screenshot 1B](<Screenshots/SCREENSHOT 1B.png>)  
   *(Placeholder: Replace with your actual screenshot of `find .pes/objects -type f`)*
 
 ### Phase 2: Tree Objects
-* **Screenshot 2A (Test Tree Pass):** ![Screenshot 2A](Screenshots/SCREENSHOT 2A.png)  
+* **Screenshot 2A (Test Tree Pass):** ![Screenshot 2A](<Screenshots/SCREENSHOT 2A.png>)  
   *(Placeholder: Replace with your actual screenshot of `./test_tree` passing)*
 
-* **Screenshot 2B (Raw Tree Hex):** ![Screenshot 2B](Screenshots/SCREENSHOT 2B.png)  
+* **Screenshot 2B (Raw Tree Hex):** ![Screenshot 2B](<Screenshots/SCREENSHOT 2B.png>)  
   *(Placeholder: Replace with your actual screenshot of `xxd` on a tree object)*
 
 ### Phase 3: The Index (Staging Area)
-* **Screenshot 3A (Status Output):** ![Screenshot 3A](Screenshots/SCREENSHOT 3A.png)  
+* **Screenshot 3A (Status Output):** ![Screenshot 3A](<Screenshots/SCREENSHOT 3A.png>)  
   *(Placeholder: Replace with your actual screenshot of `pes status` showing staged files)*
 
-* **Screenshot 3B (Raw Index File):** ![Screenshot 3B](Screenshots/SCREENSHOT 3B.png)  
+* **Screenshot 3B (Raw Index File):** ![Screenshot 3B](<Screenshots/SCREENSHOT 3B.png>)  
   *(Placeholder: Replace with your actual screenshot of `cat .pes/index`)*
 
 ### Phase 4: Commits and History
-* **Screenshot 4A (Commit Log):** ![Screenshot 4A](Screenshots/SCREENSHOT 4A.png)  
+* **Screenshot 4A (Commit Log):** ![Screenshot 4A](<Screenshots/SCREENSHOT 4A.png>)  
   *(Placeholder: Replace with your actual screenshot of `pes log`)*
 
-* **Screenshot 4B (Object Store Growth):** ![Screenshot 4B](Screenshots/SCREENSHOT 4B.png)  
+* **Screenshot 4B (Object Store Growth):** ![Screenshot 4B](<Screenshots/SCREENSHOT 4B.png>)  
   *(Placeholder: Replace with your actual screenshot showing objects after commits)*
 
-* **Screenshot 4C (Reference Chain):** ![Screenshot 4C](Screenshots/SCREENSHOT 4C.png)  
+* **Screenshot 4C (Reference Chain):** ![Screenshot 4C](<Screenshots/SCREENSHOT 4C.png>)  
   *(Placeholder: Replace with your actual screenshot of `HEAD` and `main` refs)*
 
 ### Phase 5: Final Integration
-* **Final Integration Screenshot:** ![Final Part 1](Screenshots/FINAL SCREENSHOT part 1.png)(![Final Part 2](<Screenshots/FINAL SCREENSHOT part 2.png>)) 
+* **Final Integration Screenshot:** ![Final Part 1](<Screenshots/FINAL SCREENSHOT part 1.png>) ![Final Part 2](<Screenshots/FINAL SCREENSHOT part 2.png>)  
   *(Placeholder: Replace with your actual screenshot of `make test-integration` passing)*
 
 ---
