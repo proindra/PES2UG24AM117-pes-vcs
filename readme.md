@@ -1,7 +1,7 @@
 # PES-VCS Implementation Report
 **Author:** Prajwalindra H  
 **SRN:** PES2UG24AM117  
-**Repository:** `PES2UG24AM117-pes-vcs`
+**Repository:** [PES2UG24AM117-pes-vcs](https://github.com/proindra/PES2UG24AM117-pes-vcs)
 
 ---
 
